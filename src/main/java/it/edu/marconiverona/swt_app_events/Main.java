@@ -16,15 +16,15 @@ public class Main {
         Text myField03 = (Text) Repository.repository_View.get("myField03");
         
         // leggi il contenuto dei myField
-        int operatore1 = Integer.parseInt( myField01.getText() );
-        int operatore2 = Integer.parseInt( myField02.getText() );
+        Float operatore1 = Float.parseFloat( myField01.getText() );
+        Float operatore2 = Float.parseFloat( myField02.getText() );
         
         // ottieni l'elemento model per i calcoli
         Operazione op_model = (Operazione) Repository.repository_Model
                 .get("operazioni_model");
         
         // calcola il risultato
-        int risultato = 0;
+        float risultato = 0;
         switch (operazione) {
             case "somma":
                 risultato = op_model.somma(operatore1, operatore2);
@@ -141,7 +141,6 @@ public class Main {
         int i = 0;
         for (Object value : repository_View.values()) {
             if (value instanceof Button) {
-                i++;
                 Button button = (Button) value;
                 Listener buttonListener = new Listener() {
                     @Override
@@ -153,6 +152,7 @@ public class Main {
                         }
                     }
                 };
+                i++;
                 repository_Listener.put("myButton0" + i + "_listener", buttonListener);
                 button.addListener(SWT.MouseDown, buttonListener);
             }

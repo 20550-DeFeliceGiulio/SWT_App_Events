@@ -2,16 +2,16 @@ package it.edu.marconiverona.swt_app_events;
 
 public class Operazione {
     
-    public int somma(int a, int b) {
+    public float somma(float a, float b) {
         return a + b;
     }
-    public int differenza(int a, int b) {
+    public float differenza(float a, float b) {
         return a - b;
     }
-    public int moltiplicazione(int a, int b) {
+    public float moltiplicazione(float a, float b) {
         return a * b;
     }
-    public int divisione(int a, int b) {
+    public float divisione(float a, float b) {
         return a / b;
     }
 

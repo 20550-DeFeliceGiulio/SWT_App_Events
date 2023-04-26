@@ -51,8 +51,12 @@ public class Main {
         //------------------------------------
         Display display = new Display();
         Shell root = new Shell(display);
-        root.setLayout(new GridLayout(2, true));
-
+        root.setLayout(new GridLayout(2, false));
+        root.setText("Calcolatrice");
+        
+        GridData fillHorizontally = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        fillHorizontally.horizontalIndent = 6;
+        
         //---- Istanze oggetti grafici + model + control=> CallBack/Listener
         //------------------------------------
         // istanze degli oggetti grafici
@@ -60,24 +64,34 @@ public class Main {
         Label myLabel01 = new Label(root, SWT.NORMAL);
         myLabel01.setText("Operando 1");
         Text myField01 = new Text(root, SWT.BORDER);
+        myField01.setLayoutData(fillHorizontally);
         
         Label myLabel02 = new Label(root, SWT.NORMAL);
         myLabel02.setText("Operando 2");
         Text myField02 = new Text(root, SWT.BORDER);
-        
-        Button myButton01 = new Button(root, SWT.NORMAL);
-        myButton01.setText("somma");
-        Button myButton02 = new Button(root, SWT.NORMAL);
-        myButton02.setText("differenza");
-        Button myButton03 = new Button(root, SWT.NORMAL);
-        myButton03.setText("moltiplicazione");
-        Button myButton04 = new Button(root, SWT.NORMAL);
-        myButton04.setText("divisione");
+        myField02.setLayoutData(fillHorizontally);
         
         Label myLabel03 = new Label(root, SWT.NORMAL);
-        myLabel03.setText("Risultato");
+        myLabel03.setText("Operazioni");
+        Composite buttonComposite = new Composite(root, SWT.NORMAL);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 4;
+        buttonComposite.setLayout(gridLayout);
+        Button myButton01 = new Button(buttonComposite, SWT.NORMAL);
+        myButton01.setText("somma");
+        Button myButton02 = new Button(buttonComposite, SWT.NORMAL);
+        myButton02.setText("differenza");
+        Button myButton03 = new Button(buttonComposite, SWT.NORMAL);
+        myButton03.setText("moltiplicazione");
+        Button myButton04 = new Button(buttonComposite, SWT.NORMAL);
+        myButton04.setText("divisione");
+        
+        Label myLabel04 = new Label(root, SWT.NORMAL);
+        myLabel04.setText("Risultato");
         Text myField03 = new Text(root, SWT.BORDER);
+        myField03.setLayoutData(fillHorizontally);
         myField03.setEditable(false);
+
 
         // Operazioni sulla finestra principale
         root.pack();
@@ -94,6 +108,7 @@ public class Main {
                 put("myLabel01", myLabel01);
                 put("myLabel02", myLabel02);
                 put("myLabel03", myLabel03);
+                put("myLabel04", myLabel04);
                 put("myButton01", myButton01);
                 put("myButton02", myButton02);
                 put("myButton03", myButton03);
@@ -122,84 +137,34 @@ public class Main {
         //------------------------------------
         // istanze oggetti  aventi interface Listener : Listener / CallaBack
         //------------------------------------
-        Listener myButton01_listener
-                = new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                try {
-                    bottoneOperazione("somma");
-                } catch (NumberFormatException exc) {
-                    myField03.setText("Errore");
-                }
+        Map<String, Object> repository_Listener = new HashMap<String, Object>();
+        int i = 0;
+        for (Object value : repository_View.values()) {
+            if (value instanceof Button) {
+                i++;
+                Button button = (Button) value;
+                Listener buttonListener = new Listener() {
+                    @Override
+                    public void handleEvent(Event e) {
+                        try {
+                            bottoneOperazione(button.getText());
+                        } catch (NumberFormatException exc) {
+                            myField03.setText("Errore");
+                        }
+                    }
+                };
+                repository_Listener.put("myButton0" + i + "_listener", buttonListener);
+                button.addListener(SWT.MouseDown, buttonListener);
             }
-        };
+        }
         
-        Listener myButton02_listener
-                = new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                try {
-                    bottoneOperazione("differenza");
-                } catch (NumberFormatException exc) {
-                    myField03.setText("Errore");
-                }
-            }
-        };
-        Listener myButton03_listener
-                = new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                try {
-                    bottoneOperazione("moltiplicazione");
-                } catch (NumberFormatException exc) {
-                    myField03.setText("Errore");
-                }
-            }
-        };
-        Listener myButton04_listener
-                = new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                try {
-                    bottoneOperazione("divisione");
-                } catch (NumberFormatException exc) {
-                    myField03.setText("Errore");
-                }
-            }
-        };
-
-        //------------------------------------
-        // repository listener o callback
-        //------------------------------------
-        Map<String, Object> repository_Listener = new HashMap<String, Object>() {
-            {
-                // costruttore della classe, non dell'istanza
-                put("myButton01_listener", myButton01_listener);
-                put("myButton02_listener", myButton02_listener);
-                put("myButton03_listener", myButton03_listener);
-                put("myButton04_listener", myButton04_listener);
-            }
-        };
-
         //------------------------------------
         // inizializza il repository (ovvero l'App)
         //------------------------------------
         Repository.repository_View = repository_View;
         Repository.repository_Model = repository_Model;
         Repository.repository_Listener = repository_Listener;
-
-        //------------------------------------
-        // inizializza gli oggetti view che attivano i bottoni
-        //------------------------------------
-        myButton01.addListener(SWT.MouseDown,
-                (Listener) Repository.repository_Listener.get("myButton01_listener"));
-        myButton02.addListener(SWT.MouseDown,
-                (Listener) Repository.repository_Listener.get("myButton02_listener"));
-        myButton03.addListener(SWT.MouseDown,
-                (Listener) Repository.repository_Listener.get("myButton03_listener"));
-        myButton04.addListener(SWT.MouseDown,
-                (Listener) Repository.repository_Listener.get("myButton04_listener"));
-
+        
         //------------------------------------
         // finche'  la finestra non viene chiusa _
         //        { se ci sono eventi leggi coda degli eventi => esegui
